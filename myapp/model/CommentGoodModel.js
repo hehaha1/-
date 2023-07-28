@@ -1,0 +1,21 @@
+const mongoose = require("mongoose")
+const Schema = mongoose.Schema
+
+//限制模型内只能存 username、password 这两个字段
+const UserType = {
+    userId:String, // 这条评论的发布者
+    comment:String,
+    videoId:String,
+    guserId:String, // 这条评论的点赞者
+    gavatar:String,
+    gnickName:String,
+    goodtime:String,
+    commentid:String // 这条评论的id
+}
+
+//利用mongoose创建一个叫user的模型
+//模型user 将会对应users 集合（它会自动加s）
+//通过Schema限制user的字段
+const CommentGoodModel = mongoose.model("commentgood",new mongoose.Schema(UserType))
+
+module.exports = CommentGoodModel

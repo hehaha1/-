@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/reset.css">
+</head>
+<body>
+    <div class="box">
+        <img src="/images/bg.jpg" alt="">
+        <div class="login-container">
+            <div class="login-wp">
+                <div class="login-tab-wp">
+                    <div class="login-tab-item">密码登录</div>
+                </div>
+                <div class="login-pwd-wp">
+                    <form class="tab-form" action="">
+                        <div class="form-item">
+                            <div class="form-info">账号</div>
+                            <input type="text" placeholder="请输入账号" id="username">
+                        </div>
+                        <div class="form-separator-line"></div>
+                        <div class="form-item">
+                            <div class="form-info">密码</div>
+                            <input type="password" placeholder="请输入密码" id="password">
+                        </div>
+                    </form>
+                    <div class="btn-wp">
+                        <div class="btn-register">注册</div>
+                        <div class="btn-login">登录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <table border="1px">
+      <thead>
+        <tr>
+          <td>id</td>
+          <td>用户名</td>
+          <td>头像</td>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+
+    <!-- 引入js模块 -->
+    <script src="../js/login.js"></script>
+    <script>
+        // 1. 登录功能
+        // 获取元素
+        var username = document.querySelector('#username')
+        var password = document.querySelector('#password')
+        var login = document.querySelector('.btn-login')
+
+        // 绑定事件
+        login.onclick = ()=>{
+            // 向 api/login 发送 post请求
+            fetch("/api/login",{
+                method:"POST",
+                body:JSON.stringify({
+                    username:username.value,
+                    password:password.value
+                }),
+                headers:{
+                    "Content-Type":"application/json"
+                }
+            })
+            .then(res=>res.json())
+            .then(res=>{
+                if(res.ok == 1){
+                     //JWT 2.存储token
+                    location.href='/'
+                    // 将userId存储在本地
+                    localStorage.setItem('userId',res.id)
+                }else if(res.ok == 2){
+                    location.href='/manager'
+                    localStorage.setItem('userId',res.id)
+                }else{
+                    alert("用户名或密码错误")
+                }
+            })
+        }
+
+        // 2. 注册功能
+        var register = document.querySelector('.btn-register')
+
+        // 绑定事件
+        register.onclick = ()=>{
+            // 1. 前端验证
+            if(!this.validate(password.value)) return;
+
+            fetch("/api/user/add",{
+                method:"POST",
+                body:JSON.stringify({
+                    username:username.value,
+                    password:password.value
+                }),
+                headers:{
+                    "Content-Type":"application/json"
+                }
+            }).then(res=>res.json())
+            .then(res=>{
+                if(res.ok === 1){
+                    alert("注册成功，请登录")
+                }else if(res.ok == 2){
+                    alert("该账号已被注册")
+                }
+            })
+        }
+
+        // 密码限制
+        function validate(data){
+            let bool = true;
+            var pwdRegex = new RegExp('(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,30}');
+  
+            if (!pwdRegex.test(data)) {
+                alert("您的密码复杂度太低（密码中必须包含字母、数字、特殊字符；至少8个字符，最多30个字符），请及时修改密码！");
+                bool = false;
+                console.log("bool"+bool)
+                return false;
+            }
+            console.log("bool"+bool)
+            return bool;
+        }
+        
+    </script>
+    <script type="text/javascript" src="/js/login.js"></script>
+</body>
+</html>
